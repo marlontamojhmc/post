@@ -14,8 +14,11 @@ Route::get('/', function () {
 Route::get('/reverb-test', function () {
     return Inertia::render('Post/ReverbTest');
 });
-Route::get('/event',function(){
-    HelloTest::dispatch();
+Route::get('/event', function () {
+    $message = request('message', 'Hello from Laravel!');
+    HelloTest::dispatch($message);
+
+    return response("Event dispatched with message: $message", 200);
 });
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
