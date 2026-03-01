@@ -21,7 +21,7 @@ const posts = props.posts ?? { data: [], current_page: 1, per_page: 10, links: [
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Posts', href: '/posts' },
+  { title: 'Posts', href: '/posts/' },
 ];
 </script>
 
