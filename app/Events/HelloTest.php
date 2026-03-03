@@ -7,17 +7,18 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Post;
 
 class HelloTest implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $message; // Public property for broadcast
+    public array $post; // Public property for broadcast
 
-    public function __construct(string $message = 'Hello from Laravel!')
+    public function __construct(array $post)
     {
-        $this->message = $message;
-        logger('HelloTest fired: ' . $this->message);
+        $this->post = $post;
+        
     }
 
     public function broadcastOn(): array
