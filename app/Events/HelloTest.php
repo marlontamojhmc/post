@@ -7,24 +7,27 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Post;
+use App\Models\User;
 
 class HelloTest implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public array $post; // Public property for broadcast
+    public string $message = "";
+    public int $notificationCount = 0;
 
-    public function __construct(array $post)
+    public function __construct(string $message, User $user)
     {
-        $this->post = $post;
-        
+        $this->message = $message;
+
+        // Get the user's unread notification count
+        $this->notificationCount = $user->notifications()->count();
     }
 
     public function broadcastOn(): array
     {
         return [
-            new Channel('hello-test'), // Public channel
+            new Channel('hello-test'),
         ];
     }
 }

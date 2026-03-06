@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\TestMarkdownNotification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Notification;
+
+Route::get('/notify', [Notification::class, 'notify']);
 //send email
 Route::get('/test-mail', function () {
     $user = \App\Models\User::first();
@@ -39,14 +42,15 @@ Route::get('/', function () {
 Route::get('/reverb-test', function () {
     return Inertia::render('Post/ReverbTest');
 });
-Route::get('/event/{post}', function ($postId) {
-    // Get the Post model
-    $post = Post::findOrFail($postId);
-
-    // Dispatch the event with the model (converted to array)
-    HelloTest::dispatch($post->toArray());
+Route::get('/event/{postId}', function ($postId) {
+    $post = Post::findOrFail($postId); // fetch the model
+    HelloTest::dispatch($post);         // dispatch event
 
     return response("Event dispatched for post ID: {$post->id}", 200);
+});
+Route::get('/event', function(){
+    $message ="event route is working";
+    HelloTest::dispatch($message);
 });
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
