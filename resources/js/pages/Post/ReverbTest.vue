@@ -1,50 +1,65 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
+import { usePage, router } from '@inertiajs/vue3';
 
+const page = usePage();
+
+// --- Reactive states ---
 const connected = ref(false);
 const messages = ref([]);
 const newMessage = ref('');
-const chatContainer = ref(null); // for auto-scroll
+const chatContainer = ref(null);
+const notification = ref(0);
 
-// Listen to Reverb events
+// --- Initialize notification count from Inertia shared props ---
 onMounted(() => {
+    notification.value = page.props.auth.user_notification ?? 0;
+    console.log('Initial notification count:', notification.value);
+
     if (!window.Echo) {
         console.error('❌ Echo not initialized');
         return;
     }
 
-    window.Echo.channel('hello-test')
-        .subscribed(() => {
-            connected.value = true;
-            console.log('✅ Connected to hello-test');
-        })
-        .listen('HelloTest', (e) => {
-            console.log('Received event:', e);
+    const channel = window.Echo.channel('hello-test');
 
-            // Safe access for Reverb and Pusher
-            const msg = e.message ?? e.data?.message ?? 'No message';
-            messages.value.push(msg);
+    channel.subscribed(() => {
+        connected.value = true;
+        console.log('✅ Connected to hello-test');
+    });
 
-            newMessage.value = '';
+    // Listen for HelloTest events
+    channel.listen('HelloTest', async (e) => {
+        // Update notification count from the broadcast
+        if (typeof e.notificationCount !== 'undefined') {
+            notification.value = e.notificationCount;
+        }
 
-            // Auto-scroll to bottom
-            nextTick(() => {
-                if (chatContainer.value) {
-                    chatContainer.value.scrollTop =
-                        chatContainer.value.scrollHeight;
-                }
-            });
-        });
+        // Push the message to chat
+        if (e.message) {
+            messages.value.push(e.message);
+        }
+
+        // Auto-scroll
+        await nextTick();
+        if (chatContainer.value) {
+            chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+        }
+    });
 });
 
-// Trigger event
-function triggerEvent() {
+// --- Trigger Laravel Event ---
+async function triggerEvent() {
     if (!newMessage.value) return;
 
-    fetch(`/event`)
-        .then((res) => res.text())
-        .then((data) => console.log('Server response:', data))
-        .catch((err) => console.error(err));
+    try {
+        const res = await fetch(`/notify`);
+        const data = await res.text();
+        console.log('Server response:', data);
+        newMessage.value = '';
+    } catch (err) {
+        console.error('Error sending event:', err);
+    }
 }
 </script>
 
@@ -58,6 +73,18 @@ function triggerEvent() {
         "
     >
         <h1>Reverb Chat Test</h1>
+
+        <!-- Notification -->
+        <p class="flex items-center gap-2">
+            Unread Notifications:
+            <span
+                class="inline-block rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white"
+            >
+                {{ notification }}
+            </span>
+        </p>
+
+        <!-- Connection Status -->
         <p>
             Connection:
             <strong>{{
@@ -65,6 +92,7 @@ function triggerEvent() {
             }}</strong>
         </p>
 
+        <!-- Input & Send Button -->
         <div style="display: flex; gap: 10px; margin-bottom: 10px">
             <input
                 type="text"
@@ -78,6 +106,7 @@ function triggerEvent() {
             </button>
         </div>
 
+        <!-- Chat container -->
         <div
             ref="chatContainer"
             style="
@@ -87,6 +116,8 @@ function triggerEvent() {
                 height: 300px;
                 overflow-y: auto;
                 background: #f9f9f9;
+                display: flex;
+                flex-direction: column;
             "
         >
             <div
