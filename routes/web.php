@@ -5,20 +5,52 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\PostController;
 use App\Events\HelloTest;
+use App\Models\Post;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMarkdownNotification;
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Notification;
 
+Route::get('/notify', [Notification::class, 'notify']);
+//send email
+Route::get('/test-mail', function () {
+    $user = \App\Models\User::first();
+    Mail::to($user->email)->send(new TestMarkdownNotification($user));
+
+    return 'Mail sent! with markdown';
+});
+Route::get('/magic-login/{user}', function (Request $request, User $user) {
+
+    if (! $request->hasValidSignature()) {
+        abort(403, 'Invalid or expired link.');
+    }
+
+    Auth::login($user);
+
+    return redirect('/dashboard'); // change to your route
+})
+->middleware('guest') // optional but recommended
+->name('magic.login');
+//end mail
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
+//===============reverb================//
 Route::get('/reverb-test', function () {
     return Inertia::render('Post/ReverbTest');
 });
-Route::get('/event', function () {
-    $message = request('message', 'Hello from Laravel!');
-    HelloTest::dispatch($message);
+Route::get('/event/{postId}', function ($postId) {
+    $post = Post::findOrFail($postId); // fetch the model
+    HelloTest::dispatch($post);         // dispatch event
 
-    return response("Event dispatched with message: $message", 200);
+    return response("Event dispatched for post ID: {$post->id}", 200);
+});
+Route::get('/event', function(){
+    $message ="event route is working";
+    HelloTest::dispatch($message);
 });
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');

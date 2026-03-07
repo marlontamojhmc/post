@@ -34,14 +34,17 @@ class HandleInertiaRequests extends Middleware
      * @return array<string, mixed>
      */
     public function share(Request $request): array
-    {
-        return [
-            ...parent::share($request),
-            'name' => config('app.name'),
-            'auth' => [
-                'user' => $request->user(),
-            ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-        ];
-    }
+{
+    return [
+        ...parent::share($request),
+        'name' => config('app.name'),
+        'auth' => [
+            'user' => $request->user(),
+            'user_notification' => $request->user()
+    ? $request->user()->unreadNotifications->count()
+    : 0, // return empty array if user is not logged in
+        ],
+        'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+    ];
+}
 }
