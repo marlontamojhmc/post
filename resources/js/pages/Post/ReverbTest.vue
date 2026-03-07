@@ -99,4 +99,10 @@ function triggerEvent() {
   align-self: flex-end;
   margin-left: auto;
 }
+button{
+    background-color:blue;
+    color:#fff;
+    font-weight: 800;
+    border-radius: 8px;
+}
 </style>
