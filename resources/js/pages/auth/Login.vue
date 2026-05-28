@@ -6,12 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Link } from '@inertiajs/vue3';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { route } from 'ziggy-js';
 
+const loginWithGoogle = () => {
+    // Direct browser redirect, avoids CORS
+    window.location.href = route('auth.google'); // Ziggy route generates /auth/google
+    console.log('signing in to google...');
+};
 defineProps<{
     status?: string;
     canResetPassword: boolean;
@@ -96,13 +103,20 @@ defineProps<{
                     <Spinner v-if="processing" />
                     Log in
                 </Button>
+                <Button
+                    type="button"
+                    @click="loginWithGoogle"
+                    class="w-full rounded-md bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                >
+                    Sign in with Google
+                </Button>
             </div>
 
             <div
                 class="text-center text-sm text-muted-foreground"
                 v-if="canRegister"
             >
-                Don't have an account?
+                Don't have an account?123
                 <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
             </div>
         </Form>

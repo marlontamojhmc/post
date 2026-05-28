@@ -11,6 +11,10 @@ use App\Mail\TestMarkdownNotification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Notification;
+use App\Http\Controllers\GoogleAuthController;
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
 
 Route::get('/notify', [Notification::class, 'notify']);
 //send email

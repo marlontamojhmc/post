@@ -50,6 +50,12 @@ const user = page.props.auth.user;
                     class="space-y-6"
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
+                    <img
+                        v-if="user.avatar"
+                        :src="user.avatar"
+                        class="h-20 w-20 rounded-full object-cover"
+                    />
+
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input
