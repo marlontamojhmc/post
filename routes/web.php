@@ -12,10 +12,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Notification;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\TestController;
 
 Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
-
+//test gmail
+Route::get('/send-mail', [TestController::class, 'sendEmail']);
 Route::get('/notify', [Notification::class, 'notify']);
 //send email
 Route::get('/test-mail', function () {
