@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Http;
 
 class PostController extends Controller
 {
@@ -90,5 +91,9 @@ class PostController extends Controller
 
         return redirect()->route('posts.show',$post->id);
 
+    }
+    public function sendPostEmailTest(){
+         $response = Http::get('http://localhost:8000/send-mail');
+          return $response->body();
     }
 }

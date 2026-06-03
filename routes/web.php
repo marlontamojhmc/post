@@ -16,6 +16,8 @@ use App\Http\Controllers\TestController;
 
 Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+
+Route::get('/postTestEmail', [PostController::class,'sendPostEmailTest'])->name('redirect.post.email');
 //test gmail
 Route::get('/send-mail', [TestController::class, 'sendEmail']);
 Route::get('/notify', [Notification::class, 'notify']);
