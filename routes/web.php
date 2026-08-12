@@ -13,6 +13,20 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Notification;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\TestController;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Clearance;
+use App\Exports\PostsExport;
+
+Route::get('/export-posts', function () {
+
+    return Excel::download(
+        new PostsExport,
+        'posts.xlsx'
+    );
+
+});
+
+
 
 Route::get('/auth/google/login', [GoogleAuthController::class, 'loginWithGoogle'])
     ->name('auth.google');
