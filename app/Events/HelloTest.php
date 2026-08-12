@@ -13,21 +13,27 @@ class HelloTest implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $message = "";
-    public int $notificationCount = 0;
-
-    public function __construct(string $message, User $user)
-    {
-        $this->message = $message;
-
-        // Get the user's unread notification count
-        $this->notificationCount = $user->notifications()->count();
+    public function __construct(
+        public string $message,
+        public User $user
+    ) {
+        $this->notificationCount = $user->unreadNotifications()->count();
     }
+
+    public int $notificationCount;
 
     public function broadcastOn(): array
     {
         return [
             new Channel('hello-test'),
+        ];
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'message' => $this->message,
+            'notificationCount' => $this->notificationCount,
         ];
     }
 }

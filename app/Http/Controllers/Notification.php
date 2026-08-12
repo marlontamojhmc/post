@@ -3,20 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Notifications\UserActivityNotification;
 use App\Events\HelloTest;
 
 class Notification extends Controller
 {
-    public function notify()
-    {   
-        $user = auth()->user(); // user to receive notification
-        $message = "mascara";
-        $user->notify(new UserActivityNotification('Your request was approved!', '/requests/123'));
+    public function notify(Request $request)
+    {
+        // $request->validate([
+        //     'message' => ['required', 'string', 'max:255'],
+        // ]);
+
+        $user = auth()->user();
+      
+        $message = $request->message;
+
+        $user->notify(
+            new UserActivityNotification(
+                $message,
+                '/requests/123'
+            )
+        );
+
         HelloTest::dispatch($message, $user);
+
         return response()->json([
-            'message' => 'Notification sent successfully'
+            'success' => true,
+            'message' => 'Notification sent successfully',
+            'user' => $user,
+            
         ]);
     }
 }

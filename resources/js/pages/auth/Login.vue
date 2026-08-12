@@ -19,6 +19,9 @@ const loginWithGoogle = () => {
     window.location.href = route('auth.google'); // Ziggy route generates /auth/google
     console.log('signing in to google...');
 };
+const signUpWithGoogle = () => {
+    window.location.href = route('signUp.google');
+};
 defineProps<{
     status?: string;
     canResetPassword: boolean;
@@ -109,6 +112,13 @@ defineProps<{
                     class="w-full rounded-md bg-red-500 px-4 py-2 text-white hover:bg-red-600"
                 >
                     Sign in with Google
+                </Button>
+                <Button
+                    type="button"
+                    @click="signUpWithGoogle"
+                    class="w-full rounded-md bg-green-300 px-4 py-2 text-white hover:bg-red-600"
+                >
+                    Sign up with Google
                 </Button>
             </div>
 

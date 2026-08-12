@@ -14,13 +14,21 @@ use App\Http\Controllers\Notification;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\TestController;
 
-Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+Route::get('/auth/google/login', [GoogleAuthController::class, 'loginWithGoogle'])
+    ->name('auth.google');
+
+Route::get('/auth/google/signup', [GoogleAuthController::class, 'signUpWithGoogle'])
+    ->name('signUp.google');
+
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
+    ->name('google.callback');
 
 Route::get('/postTestEmail', [PostController::class,'sendPostEmailTest'])->name('redirect.post.email');
 //test gmail
 Route::get('/send-mail', [TestController::class, 'sendEmail']);
-Route::get('/notify', [Notification::class, 'notify']);
+//Route::get('/notify', [Notification::class, 'notify']);
+Route::post('/notify', [Notification::class, 'notify'])
+    ->middleware('auth');
 //send email
 Route::get('/test-mail', function () {
     $user = \App\Models\User::first();

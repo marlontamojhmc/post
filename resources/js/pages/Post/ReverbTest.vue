@@ -50,15 +50,29 @@ onMounted(() => {
 
 // --- Trigger Laravel Event ---
 async function triggerEvent() {
-    if (!newMessage.value) return;
+    if (!newMessage.value.trim()) return;
 
     try {
-        const res = await fetch(`/notify`);
-        const data = await res.text();
-        console.log('Server response:', data);
+        const response = await fetch('/notify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+            },
+            body: JSON.stringify({
+                message: newMessage.value,
+            }),
+        });
+
+        const data = await response.json();
+
+        console.log('kinonsole log ko:  ', data.user.unread_notifications);
+
         newMessage.value = '';
-    } catch (err) {
-        console.error('Error sending event:', err);
+    } catch (error) {
+        console.error(error);
     }
 }
 </script>
@@ -93,18 +107,6 @@ async function triggerEvent() {
         </p>
 
         <!-- Input & Send Button -->
-        <div style="display: flex; gap: 10px; margin-bottom: 10px">
-            <input
-                type="text"
-                v-model="newMessage"
-                placeholder="Type a message"
-                style="flex: 1; padding: 8px"
-                @keyup.enter="triggerEvent"
-            />
-            <button @click="triggerEvent" style="padding: 8px 12px">
-                Send
-            </button>
-        </div>
 
         <!-- Chat container -->
         <div
@@ -130,6 +132,23 @@ async function triggerEvent() {
             >
                 {{ msg }}
             </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px">
+            <input
+                type="text"
+                v-model="newMessage"
+                placeholder="Type a message"
+                style="
+                    flex: 1;
+                    padding: 8px;
+                    border: 2px solid #ccc;
+                    border-radius: 5px;
+                "
+                @keyup.enter="triggerEvent"
+            />
+            <button @click="triggerEvent" style="padding: 8px 12px">
+                Send
+            </button>
         </div>
     </div>
 </template>
